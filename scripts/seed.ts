@@ -14,14 +14,20 @@ import Admin from "../models/Admin";
 dotenv.config({ path: ".env" });
 
 const DEFAULT_CATEGORIES = [
-  { name: "Computer/Laptop Repair", slug: "computer-laptop-repair", sortOrder: 1 },
-  { name: "Networking", slug: "networking", sortOrder: 2 },
-  { name: "CCTV & Surveillance", slug: "cctv-surveillance", sortOrder: 3 },
-  { name: "Printer Support", slug: "printer-support", sortOrder: 4 },
-  { name: "Data Recovery", slug: "data-recovery", sortOrder: 5 },
-  { name: "Software Installation", slug: "software-installation", sortOrder: 6 },
-  { name: "IT Support", slug: "it-support", sortOrder: 7 },
-  { name: "Other", slug: "other", sortOrder: 8 },
+  { name: "IT Support", slug: "it-support", description: "General technical support and troubleshooting", sortOrder: 1 },
+  { name: "Managed IT Services", slug: "managed-it-services", description: "Ongoing outsourced IT management", sortOrder: 2 },
+  { name: "Network Deployment", slug: "network-deployment", description: "Routers, switches, wireless access points, structured cabling", sortOrder: 3 },
+  { name: "Fiber Installation", slug: "fiber-installation", description: "Backbone and last-mile fiber installation", sortOrder: 4 },
+  { name: "Server Solutions", slug: "server-solutions", description: "Servers, storage, and racking solutions", sortOrder: 5 },
+  { name: "Cloud Services", slug: "cloud-services", description: "Migration, hosting, hybrid cloud, and backup", sortOrder: 6 },
+  { name: "CCTV Installation", slug: "cctv-installation", description: "Surveillance, access control, and biometrics", sortOrder: 7 },
+  { name: "Device Servicing", slug: "device-servicing", description: "Computer, laptop, and printer repair & maintenance", sortOrder: 8 },
+  { name: "Cybersecurity Services", slug: "cybersecurity-services", description: "Security software, firewalls, and threat protection", sortOrder: 9 },
+  { name: "Technology Consulting", slug: "technology-consulting", description: "Strategic IT and technology advisory", sortOrder: 10 },
+  { name: "ICT Procurement", slug: "ict-procurement", description: "Sourcing hardware and equipment (Dell, HP, Cisco, etc.)", sortOrder: 11 },
+  { name: "Data Recovery", slug: "data-recovery", description: "Recovery of lost or corrupted data", sortOrder: 12 },
+  { name: "Software Installation", slug: "software-installation", description: "Installation and configuration of software", sortOrder: 13 },
+  { name: "Other", slug: "other", description: "Anything not covered by the categories above", sortOrder: 14 },
 ];
 
 async function seed() {
