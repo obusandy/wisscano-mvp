@@ -450,10 +450,18 @@ export default function HomePage() {
             </nav>
           </div>
 
-          <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-            <p>Wisscano &middot; Service request portal</p>
-            <p>MVP preview &middot; Built around your technology needs.</p>
-          </div>
+          <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+  <p>Wisscano &middot; Service request portal</p>
+  <div className="flex items-center gap-4">
+    <p>MVP preview &middot; Built around your technology needs.</p>
+    <a
+      href="/admin"
+      className="rounded-md border border-white/10 px-2.5 py-1 text-slate-500 transition hover:border-emerald-500/40 hover:text-emerald-400"
+    >
+      Admin
+    </a>
+  </div>
+</div>
         </div>
       </footer>
     </div>
