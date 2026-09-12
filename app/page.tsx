@@ -451,7 +451,7 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-  <p>Wisscano &middot; Service request portal</p>
+ <p>&copy; {new Date().getFullYear()} Wisscano. All rights reserved.</p>
   <div className="flex items-center gap-4">
     <p>MVP preview &middot; Built around your technology needs.</p>
     <a
