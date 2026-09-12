@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { REQUEST_STATUSES, CONTACT_METHODS } from "@/models/ServiceRequest";
+import { REQUEST_STATUSES, CONTACT_METHODS } from "./request-constants";
 
 export const createRequestSchema = z.object({
   fullName: z

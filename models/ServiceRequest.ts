@@ -1,16 +1,21 @@
 import mongoose, { Schema, model, models, Document, Types } from "mongoose";
 
-export const REQUEST_STATUSES = [
-  "NEW",
-  "REVIEWING",
-  "IN_PROGRESS",
-  "COMPLETED",
-  "CANCELLED",
-] as const;
-export type RequestStatus = (typeof REQUEST_STATUSES)[number];
+import {
+  REQUEST_STATUSES,
+  CONTACT_METHODS,
+  type RequestStatus,
+  type ContactMethod,
+} from "@/lib/request-constants";
 
-export const CONTACT_METHODS = ["EMAIL", "PHONE"] as const;
-export type ContactMethod = (typeof CONTACT_METHODS)[number];
+export {
+  REQUEST_STATUSES,
+  CONTACT_METHODS,
+} from "@/lib/request-constants";
+
+export type {
+  RequestStatus,
+  ContactMethod,
+} from "@/lib/request-constants";
 
 export interface IServiceRequest extends Document {
   fullName: string;
