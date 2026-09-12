@@ -33,7 +33,7 @@ const DEFAULT_CATEGORIES = [
 async function seed() {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
-    throw new Error("MONGODB_URI not found in .env.local");
+    throw new Error("MONGODB_URI not found in .env");
   }
 
   await mongoose.connect(uri);
@@ -55,7 +55,7 @@ async function seed() {
 
   if (!adminEmail || !adminPassword) {
     console.warn(
-      "⚠️  ADMIN_SEED_EMAIL / ADMIN_SEED_PASSWORD not set in .env.local — skipping admin creation."
+      "⚠️  ADMIN_SEED_EMAIL / ADMIN_SEED_PASSWORD not set in .env — skipping admin creation."
     );
   } else {
     const existing = await Admin.findOne({ email: adminEmail.toLowerCase() });
