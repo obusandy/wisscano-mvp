@@ -64,6 +64,19 @@ type Receipt = {
   preferredContact: CreateRequestInput["preferredContact"];
 };
 
+/* ------------------------------------------------------------------ */
+/* Styling (dark glass, blue accent)                                   */
+/* ------------------------------------------------------------------ */
+const fieldBase =
+  "rounded-xl border-white/20 bg-white/10 text-white " +
+  "placeholder:text-[#7DB3FF]/70 " +
+  "focus-visible:border-[#4D9BFF] focus-visible:bg-white/15 focus-visible:ring-[#0A63FF]/40";
+
+const inputClassName = "h-11 " + fieldBase;
+
+const outlineButton =
+  "border-white/25 bg-white/10 text-white hover:bg-white/20 hover:text-white";
+
 function Field({
   name,
   label,
@@ -77,9 +90,9 @@ function Field({
 }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={name} className="text-sm font-medium text-slate-700">
+      <Label htmlFor={name} className="text-sm font-medium text-white/90">
         {label}
-        <span aria-hidden="true" className="ml-1 text-emerald-700">
+        <span aria-hidden="true" className="ml-1 text-[#4D9BFF]">
           *
         </span>
       </Label>
@@ -90,7 +103,7 @@ function Field({
         <p
           id={`${name}-error`}
           role="alert"
-          className="text-sm text-red-700"
+          className="text-sm text-red-300"
         >
           {error[0]}
         </p>
@@ -98,10 +111,6 @@ function Field({
     </div>
   );
 }
-
-const inputClassName =
-  "h-11 border-slate-200 bg-white text-slate-900 " +
-  "focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20";
 
 export function RequestForm() {
   const [categoryState, setCategoryState] = useState<CategoryState>({
@@ -286,15 +295,15 @@ export function RequestForm() {
 
   if (receipt) {
     return (
-      <div className="px-6 py-12 text-center sm:px-10">
-        <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-emerald-50">
+      <div className="py-0 text-center sm:py-6">
+        <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-[#0A63FF]/20 ring-1 ring-[#4D9BFF]/40">
           <CheckCircle2
             aria-hidden="true"
-            className="size-10 text-emerald-600"
+            className="size-10 text-[#4D9BFF]"
           />
         </div>
 
-        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold tracking-wide text-emerald-700">
+        <span className="rounded-full bg-[#0A63FF]/20 px-3 py-1 text-xs font-semibold tracking-wide text-[#7DB3FF]">
           REQUEST RECEIVED
         </span>
 
@@ -302,30 +311,30 @@ export function RequestForm() {
           id="request-form-heading"
           ref={successHeadingRef}
           tabIndex={-1}
-          className="mt-5 break-words text-3xl font-semibold tracking-tight text-slate-950 outline-none"
+          className="mt-5 break-words text-3xl font-bold tracking-tight text-white outline-none"
         >
           Thanks, {receipt.firstName}.
           <br />
           We&apos;ll take it from here.
         </h2>
 
-        <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-slate-600">
+        <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-white/70">
           Your request has been saved. The team will review your
           requirements and follow up by{" "}
           {receipt.preferredContact === "EMAIL" ? "email" : "phone"}.
         </p>
 
-        <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left">
+        <div className="mx-auto mt-8 max-w-xl rounded-2xl border border-white/15 bg-white/5 p-5 text-left">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">
+            <p className="text-xs font-medium uppercase tracking-wider text-white/60">
               Request reference
             </p>
-            <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
+            <span className="rounded-full bg-[#0A63FF]/25 px-2.5 py-1 text-xs font-medium text-[#7DB3FF]">
               New
             </span>
           </div>
 
-          <code className="mt-3 block select-all break-all text-sm font-semibold text-slate-900">
+          <code className="mt-3 block select-all break-all text-sm font-semibold text-white">
             {receipt.id}
           </code>
 
@@ -334,7 +343,7 @@ export function RequestForm() {
             variant="outline"
             size="sm"
             onClick={copyReference}
-            className="mt-4"
+            className={`mt-4 rounded-full ${outlineButton}`}
           >
             {copyState === "copied" ? (
               <Check aria-hidden="true" className="size-4" />
@@ -344,7 +353,7 @@ export function RequestForm() {
             {copyState === "copied" ? "Copied" : "Copy reference"}
           </Button>
 
-          <p aria-live="polite" className="mt-2 text-xs text-slate-500">
+          <p aria-live="polite" className="mt-2 text-xs text-white/60">
             {copyState === "failed"
               ? "Clipboard unavailable. Select and copy the reference above."
               : "Keep this reference for any follow-up."}
@@ -359,7 +368,7 @@ export function RequestForm() {
             setErrors({});
             setFormError(null);
           }}
-          className="mt-7 h-11 w-full bg-slate-950 text-white hover:bg-slate-800"
+          className="mx-auto mt-7 h-12 w-full max-w-xl rounded-full bg-[#0A63FF] text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-[#00070D]"
         >
           Submit another request
           <ArrowRight aria-hidden="true" className="size-4" />
@@ -369,23 +378,23 @@ export function RequestForm() {
   }
 
   return (
-    <div className="p-6 sm:p-8">
+    <div>
       <div className="mb-7">
         <div className="mb-3 flex items-center gap-2">
-          <span className="size-2 rounded-full bg-emerald-500" />
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700">
+          <span className="size-2 rounded-full bg-[#4D9BFF]" />
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#7DB3FF]">
             Let&apos;s get started
           </p>
         </div>
 
         <h2
           id="request-form-heading"
-          className="text-2xl font-semibold tracking-tight text-slate-950"
+          className="text-2xl font-bold tracking-tight text-white sm:text-3xl"
         >
           Tell us what you need
         </h2>
 
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <p className="mt-2 text-sm leading-6 text-white/70">
           Share a few details so we can understand your request.
           All fields are required.
         </p>
@@ -413,7 +422,7 @@ export function RequestForm() {
                 {...fieldAttributes("fullName")}
                 autoComplete="name"
                 maxLength={120}
-                placeholder="Jane Doe"
+                placeholder="June Donovan"
                 className={inputClassName}
               />
             </Field>
@@ -424,7 +433,7 @@ export function RequestForm() {
                 type="email"
                 autoComplete="email"
                 maxLength={200}
-                placeholder="jane@example.com"
+                placeholder="june@example.com"
                 className={inputClassName}
               />
             </Field>
@@ -452,16 +461,24 @@ export function RequestForm() {
                   {...fieldAttributes("categoryId")}
                   defaultValue=""
                   disabled={categoryState.status !== "ready"}
-                  className="h-11 w-full appearance-none rounded-md border border-slate-200 bg-white pl-3 pr-9 text-sm text-slate-900 shadow-xs outline-none transition focus-visible:border-emerald-500 focus-visible:ring-[3px] focus-visible:ring-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-red-500"
+                  className="h-11 w-full appearance-none rounded-xl border border-white/20 bg-white/10 pl-3 pr-9 text-sm text-white shadow-xs outline-none transition invalid:text-[#7DB3FF]/70 focus-visible:border-[#4D9BFF] focus-visible:bg-white/15 focus-visible:ring-[3px] focus-visible:ring-[#0A63FF]/40 disabled:cursor-not-allowed disabled:text-[#7DB3FF]/70 disabled:opacity-60 aria-invalid:border-red-400"
                 >
-                  <option value="" disabled>
+                  <option
+                    value=""
+                    disabled
+                    className="bg-[#00070D] text-white"
+                  >
                     {categoryState.status === "loading"
                       ? "Loading services..."
                       : "Select a service"}
                   </option>
 
                   {categories.map((category) => (
-                    <option key={category._id} value={category._id}>
+                    <option
+                      key={category._id}
+                      value={category._id}
+                      className="bg-[#00070D] text-white"
+                    >
                       {category.name}
                     </option>
                   ))}
@@ -469,7 +486,7 @@ export function RequestForm() {
 
                 <ChevronDown
                   aria-hidden="true"
-                  className="pointer-events-none absolute right-3 top-3.5 size-4 text-slate-400"
+                  className="pointer-events-none absolute right-3 top-3.5 size-4 text-[#7DB3FF]"
                 />
               </div>
             </Field>
@@ -478,9 +495,9 @@ export function RequestForm() {
           {categoryState.status === "error" && (
             <div
               role="alert"
-              className="rounded-xl border border-amber-200 bg-amber-50 p-4"
+              className="rounded-xl border border-amber-400/40 bg-amber-500/15 p-4"
             >
-              <p className="text-sm text-amber-900">
+              <p className="text-sm text-amber-100">
                 {categoryState.message}
               </p>
               <Button
@@ -488,7 +505,7 @@ export function RequestForm() {
                 variant="outline"
                 size="sm"
                 onClick={retryCategories}
-                className="mt-3"
+                className={`mt-3 rounded-full ${outlineButton}`}
               >
                 <RefreshCw aria-hidden="true" className="size-4" />
                 Retry loading services
@@ -503,9 +520,9 @@ export function RequestForm() {
                 : undefined
             }
           >
-            <legend className="mb-2 text-sm font-medium text-slate-700">
+            <legend className="mb-2 text-sm font-medium text-white/90">
               Preferred contact method
-              <span aria-hidden="true" className="ml-1 text-emerald-700">
+              <span aria-hidden="true" className="ml-1 text-[#4D9BFF]">
                 *
               </span>
             </legend>
@@ -517,7 +534,7 @@ export function RequestForm() {
               ].map(({ value, label, Icon }) => (
                 <label
                   key={value}
-                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200 p-3.5 text-sm text-slate-700 transition has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50"
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-white/20 bg-white/5 p-3.5 text-sm text-white/85 transition hover:bg-white/10 has-[:checked]:border-[#4D9BFF] has-[:checked]:bg-[#0A63FF]/25 has-[:checked]:text-white"
                 >
                   <input
                     type="radio"
@@ -525,11 +542,11 @@ export function RequestForm() {
                     value={value}
                     defaultChecked={value === "EMAIL"}
                     required
-                    className="size-4 accent-emerald-600"
+                    className="size-4 accent-[#0A63FF]"
                   />
                   <Icon
                     aria-hidden="true"
-                    className="size-4 text-slate-500"
+                    className="size-4 text-[#7DB3FF]"
                   />
                   {label}
                 </label>
@@ -540,7 +557,7 @@ export function RequestForm() {
               <p
                 id="preferredContact-error"
                 role="alert"
-                className="mt-2 text-sm text-red-700"
+                className="mt-2 text-sm text-red-300"
               >
                 {errors.preferredContact[0]}
               </p>
@@ -557,9 +574,9 @@ export function RequestForm() {
               rows={4}
               maxLength={2000}
               placeholder="Tell us what you need. Include useful details such as equipment, quantities, location, or the problem you're experiencing."
-              className="min-h-32 resize-y border-slate-200 bg-white text-slate-900 focus-visible:border-emerald-500 focus-visible:ring-emerald-500/20"
+              className={`min-h-32 resize-y ${fieldBase}`}
             />
-            <p className="text-xs leading-5 text-slate-500">
+            <p className="text-xs leading-5 text-white/60">
               10–2,000 characters. Please do not include passwords, PINs,
               payment details, or other confidential information.
             </p>
@@ -569,7 +586,7 @@ export function RequestForm() {
         {formError && (
           <div
             role="alert"
-            className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-800"
+            className="rounded-xl border border-red-400/40 bg-red-500/15 p-4 text-sm leading-6 text-red-100"
           >
             {formError}
           </div>
@@ -578,7 +595,7 @@ export function RequestForm() {
         <Button
           type="submit"
           disabled={submitting || categoryState.status !== "ready"}
-          className="h-12 w-full rounded-xl bg-emerald-600 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700"
+          className="h-12 w-full rounded-full bg-[#0A63FF] text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-sm transition-colors hover:bg-white hover:text-[#00070D]"
         >
           {submitting ? (
             <>
@@ -596,7 +613,7 @@ export function RequestForm() {
           )}
         </Button>
 
-        <p className="text-center text-xs leading-5 text-slate-500">
+        <p className="text-center text-xs leading-5 text-white/60">
           Your contact details help the team follow up on this request.
         </p>
       </form>
