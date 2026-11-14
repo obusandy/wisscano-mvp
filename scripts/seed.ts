@@ -14,20 +14,48 @@ import Admin from "../models/Admin";
 dotenv.config({ path: ".env" });
 
 const DEFAULT_CATEGORIES = [
-  { name: "IT Support", slug: "it-support", description: "General technical support and troubleshooting", sortOrder: 1 },
-  { name: "Managed IT Services", slug: "managed-it-services", description: "Ongoing outsourced IT management", sortOrder: 2 },
-  { name: "Network Deployment", slug: "network-deployment", description: "Routers, switches, wireless access points, structured cabling", sortOrder: 3 },
-  { name: "Fiber Installation", slug: "fiber-installation", description: "Backbone and last-mile fiber installation", sortOrder: 4 },
-  { name: "Server Solutions", slug: "server-solutions", description: "Servers, storage, and racking solutions", sortOrder: 5 },
-  { name: "Cloud Services", slug: "cloud-services", description: "Migration, hosting, hybrid cloud, and backup", sortOrder: 6 },
-  { name: "CCTV Installation", slug: "cctv-installation", description: "Surveillance, access control, and biometrics", sortOrder: 7 },
-  { name: "Device Servicing", slug: "device-servicing", description: "Computer, laptop, and printer repair & maintenance", sortOrder: 8 },
-  { name: "Cybersecurity Services", slug: "cybersecurity-services", description: "Security software, firewalls, and threat protection", sortOrder: 9 },
-  { name: "Technology Consulting", slug: "technology-consulting", description: "Strategic IT and technology advisory", sortOrder: 10 },
-  { name: "ICT Procurement", slug: "ict-procurement", description: "Sourcing hardware and equipment (Dell, HP, Cisco, etc.)", sortOrder: 11 },
-  { name: "Data Recovery", slug: "data-recovery", description: "Recovery of lost or corrupted data", sortOrder: 12 },
-  { name: "Software Installation", slug: "software-installation", description: "Installation and configuration of software", sortOrder: 13 },
-  { name: "Other", slug: "other", description: "Anything not covered by the categories above", sortOrder: 14 },
+  { 
+    name: "Cloud & Digital Infrastructure", 
+    slug: "cloud-digital-infrastructure", 
+    description: "Cloud hosting, VPS, domains, DNS, business email, migrations, backup and infrastructure management.", 
+    sortOrder: 1 
+  },
+  { 
+    name: "Websites & E-commerce", 
+    slug: "websites-ecommerce", 
+    description: "Business websites, online stores, web experiences, hosting and ongoing technical support.", 
+    sortOrder: 2 
+  },
+  { 
+    name: "Applications & Software", 
+    slug: "applications-software", 
+    description: "Custom web and mobile applications, business software, APIs and system integrations.", 
+    sortOrder: 3 
+  },
+  { 
+    name: "Automation & Cybersecurity", 
+    slug: "automation-cybersecurity", 
+    description: "Workflow automation, security integrations, data protection and operational continuity solutions.", 
+    sortOrder: 4 
+  },
+  { 
+    name: "Licences & Subscriptions", 
+    slug: "licences-subscriptions", 
+    description: "Genuine software licences and subscriptions for productivity, creative, cloud and business use.", 
+    sortOrder: 5 
+  },
+  { 
+    name: "Technical Support", 
+    slug: "technical-support", 
+    description: "Configuration, deployment, maintenance, troubleshooting and ongoing digital support.", 
+    sortOrder: 6 
+  },
+  { 
+    name: "Other", 
+    slug: "other", 
+    description: "Anything not covered by the categories above", 
+    sortOrder: 7 
+  },
 ];
 
 async function seed() {
@@ -39,15 +67,21 @@ async function seed() {
   await mongoose.connect(uri);
   console.log("Connected to MongoDB for seeding...");
 
-  // --- Seed Categories (idempotent: upsert by slug) ---
+  // --- Seed Categories (upsert new/updated ones and clean up obsolete ones) ---
+  const validSlugs = DEFAULT_CATEGORIES.map((cat) => cat.slug);
+
+  // 1. Remove old categories no longer in the active list
+  await Category.deleteMany({ slug: { $nin: validSlugs } });
+
+  // 2. Upsert the current active categories
   for (const cat of DEFAULT_CATEGORIES) {
     await Category.updateOne(
       { slug: cat.slug },
-      { $setOnInsert: cat },
+      { $set: cat },
       { upsert: true }
     );
   }
-  console.log(`✅ Seeded ${DEFAULT_CATEGORIES.length} categories (upsert, no duplicates)`);
+  console.log(`✅ Seeded exactly ${DEFAULT_CATEGORIES.length} active categories (cleaned up old ones)`);
 
   // --- Seed Admin (idempotent: skip if email already exists) ---
   const adminEmail = process.env.ADMIN_SEED_EMAIL;
@@ -60,7 +94,7 @@ async function seed() {
   } else {
     const existing = await Admin.findOne({ email: adminEmail.toLowerCase() });
     if (existing) {
-      console.log(`ℹ️  Admin ${adminEmail} already exists — skipping.`);
+      console.log(` Admin ${adminEmail} already exists — skipping.`);
     } else {
       const passwordHash = await bcrypt.hash(adminPassword, 12);
       await Admin.create({

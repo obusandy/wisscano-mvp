@@ -378,7 +378,7 @@ export function RequestForm() {
   }
 
   return (
-    <div>
+    <div id="contact">
       <div className="mb-7">
         <div className="mb-3 flex items-center gap-2">
           <span className="size-2 rounded-full bg-[#4D9BFF]" />

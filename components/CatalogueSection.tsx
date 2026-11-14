@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {
   useEffect,
   useRef,
@@ -10,9 +11,7 @@ import {
 } from "react";
 import { ArrowRight, X } from "lucide-react";
 import { display, mono } from "@/lib/fonts";
-
-// Same destination as the hero CTA
-const MVP_REQUEST_URL = "";
+import { useCart } from "@/context/CartContext";
 
 /* ------------------------------------------------------------------ */
 /* Images: put these in public/images/                                 */
@@ -40,18 +39,38 @@ const SPAN_R = 0.82;
 const ZOOM_DESKTOP = 2.6;
 const ZOOM_MOBILE = 3;
 
+// How many fetched items to show in the panel before "View more"
+const PANEL_LIMIT = 6;
+
 type ZoneId = "rooftop" | "workspace" | "entrance";
+
+type CatalogItem = {
+  _id: string;
+  type: "product" | "service";
+  name: string;
+  slug: string;
+  description?: string;
+  brand?: string;
+  category?: string;
+  image?: string;
+  price?: number;
+  currency?: string;
+  sectorTags: string[];
+  order: number;
+};
 
 /* ------------------------------------------------------------------ */
 /* Content. Wording and product names follow the playbook (Section D). */
 /* `rect` is the tappable zone on the building photo, as a percentage  */
 /* of the photo: x, y, width, height. Nudge these to fit the photo.    */
+/* `sector` is the slug used on the /products page.                    */
 /* ------------------------------------------------------------------ */
 const ZONES: {
   id: ZoneId;
   num: string;
   label: string;
   area: string;
+  sector: "ict-digital" | "facility-tech" | "power-energy";
   blurb: string;
   items: string[];
   rect: { x: number; y: number; w: number; h: number };
@@ -61,6 +80,7 @@ const ZONES: {
     num: "01",
     label: "Rooftop",
     area: "Power and energy",
+    sector: "power-energy",
     blurb:
       "The backup power, solar, batteries, and electrical protection that keep a business running when the mains fails or costs rise.",
     items: [
@@ -79,6 +99,7 @@ const ZONES: {
     num: "02",
     label: "Workspace",
     area: "ICT and digital",
+    sector: "ict-digital",
     blurb:
       "The networks, Wi-Fi, cabling, servers, telephony, business systems, and digital tools that keep a business connected.",
     items: [
@@ -99,6 +120,7 @@ const ZONES: {
     num: "03",
     label: "Entrance",
     area: "Facility technology",
+    sector: "facility-tech",
     blurb:
       "The cameras, access control, fire detection, alarms, and building controls that watch over and protect a property.",
     items: [
@@ -144,6 +166,101 @@ const ringOnPhoto =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white";
 
 /* ------------------------------------------------------------------ */
+/* One card in the panel grid                                          */
+/* ------------------------------------------------------------------ */
+function PanelTile({ item, sector }: { item: CatalogItem; sector: string }) {
+  const { addItem } = useCart();
+  const [broken, setBroken] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const isProduct = item.type === "product";
+  const showImage = !!item.image && !broken;
+  // Products open on their own card; services open on the services list
+  const href = isProduct
+    ? `/products?sector=${sector}#${item.slug}`
+    : `/products?sector=${sector}#services`;
+
+  const handleAdd = () => {
+    addItem({
+      id: item._id,
+      name: item.name,
+      price: item.price ?? 0,
+      quantity: 1,
+      image: item.image,
+      brand: item.brand,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
+
+  return (
+    <li className="flex flex-col overflow-hidden rounded-2xl border border-white/20 bg-black/30 [text-shadow:none]">
+      <Link
+        href={href}
+        aria-label={`Open ${item.name}`}
+        className={`relative block aspect-[4/3] w-full bg-gradient-to-b from-gray-50 to-gray-200 ${ring}`}
+      >
+        {showImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.image}
+            alt=""
+            loading="lazy"
+            onError={() => setBroken(true)}
+            className="absolute inset-0 h-full w-full object-contain p-3"
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 flex items-center justify-center text-5xl font-bold text-[#0A63FF]/25"
+          >
+            {(item.brand ?? item.name).charAt(0).toUpperCase()}
+          </span>
+        )}
+        {item.brand && (
+          <span className="absolute left-2 top-2 rounded-full bg-white/90 px-2.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-gray-700 shadow-sm">
+            {item.brand}
+          </span>
+        )}
+      </Link>
+
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
+        <Link
+          href={href}
+          className={`line-clamp-2 text-sm font-semibold leading-snug text-white hover:underline ${ring}`}
+        >
+          {item.name}
+        </Link>
+
+        <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+          <span className="text-xs font-bold text-white/90">
+            {isProduct && item.price
+              ? `${item.currency ?? "KES"} ${item.price.toLocaleString()}`
+              : "Service"}
+          </span>
+          {isProduct ? (
+            <button
+              type="button"
+              onClick={handleAdd}
+              className={`rounded-full bg-[#0A63FF] px-3.5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-blue-600 ${ring}`}
+            >
+              {added ? "Added ✓" : "Add to Cart"}
+            </button>
+          ) : (
+            <Link
+              href={href}
+              className={`rounded-full border border-white/30 px-3.5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.08em] text-white transition-colors hover:bg-white/20 ${ring}`}
+            >
+              Enquire
+            </Link>
+          )}
+        </div>
+      </div>
+    </li>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Where the building photo sits, so the markers always land on it     */
 /* ------------------------------------------------------------------ */
 type Box = { left: number; top: number; w: number; h: number };
@@ -185,6 +302,7 @@ const isDesktop = () =>
 /* Section                                                             */
 /* ------------------------------------------------------------------ */
 export default function CatalogueSection() {
+  const { count } = useCart();
   const [active, setActive] = useState<ZoneId | null>(null);
   const [hover, setHover] = useState<ZoneId | null>(null);
   const [layout, setLayout] = useState<Layout | null>(null);
@@ -193,6 +311,7 @@ export default function CatalogueSection() {
   const [openDelay, setOpenDelay] = useState(400);
   const [whooshKey, setWhooshKey] = useState(0);
   const [reduced, setReduced] = useState(false);
+  const [catalog, setCatalog] = useState<CatalogItem[]>([]);
 
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
@@ -206,6 +325,22 @@ export default function CatalogueSection() {
     const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  // Fetch the catalogue once, so the panels open instantly
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/catalogue")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (!cancelled && Array.isArray(data)) setCatalog(data);
+      })
+      .catch(() => {
+        // If the fetch fails, the panel falls back to the scope list
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Measure the section so the photo and markers line up on every screen
@@ -302,6 +437,17 @@ export default function CatalogueSection() {
   const originStr = origin ? `${origin.x}px ${origin.y}px` : "50% 50%";
   const bgOriginStr = bgOrigin ? `${bgOrigin.x}px ${bgOrigin.y}px` : "50% 50%";
   const zoom = layout?.desktop === false ? ZOOM_MOBILE : ZOOM_DESKTOP;
+
+  // The fetched items for the open zone: products first, then services
+  const sectorItems = current
+    ? catalog
+        .filter((i) => i.sectorTags?.includes(current.sector))
+        .sort((a, b) => {
+          if (a.type !== b.type) return a.type === "product" ? -1 : 1;
+          return a.order - b.order;
+        })
+    : [];
+  const shownItems = sectorItems.slice(0, PANEL_LIMIT);
 
   /* ----------------------- Motion for the background ----------------------- */
   const buildingStyle: CSSProperties = reduced
@@ -497,9 +643,7 @@ export default function CatalogueSection() {
             >
               Find what your <span className="text-blue-400">building needs.</span>
             </h2>
-            <p className="mt-5 text-base leading-relaxed text-white/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.6)] md:text-lg">
-              Choose a zone on the building, or use the buttons below.
-            </p>
+            
 
             {/* The three buttons: same result as tapping the building */}
             <div className="mt-7 grid w-full grid-cols-3 gap-2 sm:gap-3">
@@ -571,40 +715,55 @@ export default function CatalogueSection() {
 
                 <div className="mt-6 border-t border-white/20 pt-5">
                   <h4 className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-white/75">
-                    Key offerings and scope
+                    {shownItems.length > 0 ? "Available now" : "Key offerings and scope"}
                   </h4>
-                  <ul className="grid gap-x-8 gap-y-3 md:grid-cols-2">
-                    {current.items.map((item) => (
-                      <li
-                        key={item}
-                        className="flex items-start gap-3 border-b border-white/15 pb-3 text-sm leading-snug text-white"
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="mt-[0.4rem] h-1.5 w-1.5 shrink-0 rounded-full bg-blue-300"
-                        />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+
+                  {shownItems.length > 0 ? (
+                    <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3">
+                      {shownItems.map((item) => (
+                        <PanelTile key={item._id} item={item} sector={current.sector} />
+                      ))}
+                    </ul>
+                  ) : (
+                    <ul className="grid gap-x-8 gap-y-3 md:grid-cols-2">
+                      {current.items.map((item) => (
+                        <li
+                          key={item}
+                          className="flex items-start gap-3 border-b border-white/15 pb-3 text-sm leading-snug text-white"
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="mt-[0.4rem] h-1.5 w-1.5 shrink-0 rounded-full bg-blue-300"
+                          />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
-                <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:items-center">
-                  <a
-                    href={MVP_REQUEST_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <div className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-center">
+                  <Link
+                    href={`/products?sector=${current.sector}`}
                     className={`flex items-center justify-center gap-2 rounded-full bg-[#0A63FF] px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-blue-600 ${ring}`}
                   >
-                    Start a request
+                    View more
                     <ArrowRight size={14} />
-                  </a>
+                  </Link>
+                  {count > 0 && (
+                    <Link
+                      href="/cart"
+                      className={`flex items-center justify-center gap-2 rounded-full border border-white bg-white/10 px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white/25 ${ring}`}
+                    >
+                      Checkout ({count})
+                    </Link>
+                  )}
                   <button
                     type="button"
                     onClick={close}
                     className={`flex items-center justify-center rounded-full border border-white/30 bg-black/20 px-6 py-3.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white/20 ${ring}`}
                   >
-                    Back to building
+                    Back
                   </button>
                 </div>
 

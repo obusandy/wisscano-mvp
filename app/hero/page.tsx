@@ -1,20 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
 import { display, mono } from "@/lib/fonts";
 
 // Point directly to your live MVP portal or a local /request route
 const MVP_REQUEST_URL = "https://wisscano-mvp-mu.vercel.app/";
 
+// Must match the background color of the About section exactly
+const ABOUT_BG = "#00070D";
+const ABOUT_RGB = "0, 7, 13"; // same color as ABOUT_BG, as r, g, b
+
 const SECTORS = ["ICT & Digital", "Power & Energy", "Facility Technology"] as const;
 const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=<>/";
 
 const focusRing =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D9BFF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#00070D]";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A63FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F4F8FC]";
 
 /* ------------------------------------------------------------------ */
-/* Keyframes for the Power & Energy glitch and the code caret          */
+/* The fade into the About section. Many small steps, so there is no   */
+/* point where the eye can see an edge.                                */
+/* ------------------------------------------------------------------ */
+const fadeStops: [number, number][] = [
+  [0, 0],
+  [10, 0.02],
+  [20, 0.07],
+  [30, 0.15],
+  [40, 0.27],
+  [50, 0.42],
+  [60, 0.58],
+  [70, 0.74],
+  [80, 0.87],
+  [90, 0.96],
+  [100, 1],
+];
+
+const FADE_STYLE: CSSProperties = {
+  backgroundImage: `linear-gradient(to bottom, ${fadeStops
+    .map(([pos, a]) => `rgba(${ABOUT_RGB}, ${a}) ${pos}%`)
+    .join(", ")})`,
+};
+
+/* ------------------------------------------------------------------ */
+/* Keyframes for the Power & Energy glitch and the code caret         */
 /* ------------------------------------------------------------------ */
 const EFFECTS_CSS = `
 @keyframes wz-caret { 0%,49% { opacity: 1 } 50%,100% { opacity: 0 } }
@@ -38,7 +66,7 @@ const EFFECTS_CSS = `
 }
 .wz-caret {
   display: inline-block; width: 2px; height: 1.1em; margin-left: 3px;
-  background: #4D9BFF; vertical-align: -0.15em;
+  background: #0A63FF; vertical-align: -0.15em;
   animation: wz-caret 0.9s steps(1) infinite;
 }
 .wz-glitch {
@@ -48,7 +76,7 @@ const EFFECTS_CSS = `
 .wz-glitch::before, .wz-glitch::after {
   content: attr(data-text); position: absolute; inset: 0; white-space: nowrap;
 }
-.wz-glitch::before { color: #4D9BFF; animation: wz-slice-a 1.1s steps(1, end) infinite; }
+.wz-glitch::before { color: #38BDF8; animation: wz-slice-a 1.1s steps(1, end) infinite; }
 .wz-glitch::after  { color: #0A63FF; animation: wz-slice-b 0.9s steps(1, end) infinite; }
 @media (prefers-reduced-motion: reduce) {
   .wz-caret, .wz-glitch { animation: none; }
@@ -57,10 +85,7 @@ const EFFECTS_CSS = `
 `;
 
 /* ------------------------------------------------------------------ */
-/* Cycling sector line                                                 */
-/* 0 ICT & Digital     -> typed out in code format                     */
-/* 1 Power & Energy    -> glitches                                     */
-/* 2 Facility Tech     -> appears at random, then locks into place     */
+/* Cycling sector line                                                */
 /* ------------------------------------------------------------------ */
 function SectorCycler() {
   const [index, setIndex] = useState(0);
@@ -69,7 +94,6 @@ function SectorCycler() {
   const [visible, setVisible] = useState(true);
   const [reduced, setReduced] = useState(false);
 
-  // Respect "reduce motion"
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
     setReduced(mq.matches);
@@ -90,7 +114,6 @@ function SectorCycler() {
     setDone(false);
 
     if (index === 0) {
-      // Typed, one character at a time
       const step = 60;
       let i = 0;
       setText("");
@@ -105,11 +128,9 @@ function SectorCycler() {
       intervals.push(id);
       holdMs = label.length * step + 1800;
     } else if (index === 1) {
-      // Shown immediately; the glitch itself is CSS
       setText(label);
       holdMs = 2600;
     } else {
-      // Random characters that settle in random order
       const settleBy = 1100;
       const start = performance.now();
       const settleAt = label.split("").map(() => 250 + Math.random() * (settleBy - 250));
@@ -149,7 +170,6 @@ function SectorCycler() {
 
   return (
     <div className="mt-6 md:mt-9">
-      {/* Always available to screen readers */}
       <ul className="sr-only">
         {SECTORS.map((s) => (
           <li key={s}>{s}</li>
@@ -157,30 +177,28 @@ function SectorCycler() {
       </ul>
 
       {reduced ? (
-        // Static version for people who prefer reduced motion
         <p
           aria-hidden="true"
           style={mono.style}
-          className="flex flex-wrap items-center gap-x-3 gap-y-1 text-lg text-white/90 md:text-xl"
+          className="flex flex-wrap items-center gap-x-3 gap-y-1 text-lg text-[#1E293B] md:text-xl"
         >
           {SECTORS.map((s, i) => (
             <span key={s} className="flex items-center gap-3">
-              {i > 0 && <span className="text-[#4D9BFF]">/</span>}
+              {i > 0 && <span className="text-[#0A63FF]">/</span>}
               {s}
             </span>
           ))}
         </p>
       ) : (
         <>
-          {/* Fixed height so nothing below ever jumps */}
           <div
             aria-hidden="true"
             style={mono.style}
-            className={`flex h-10 items-center text-xl text-white md:h-11 md:text-2xl [text-shadow:0_2px_18px_rgba(0,7,13,0.8)] transition-opacity duration-300 ${
+            className={`flex h-10 items-center text-xl font-medium text-[#0F172A] md:h-11 md:text-2xl transition-opacity duration-300 ${
               visible ? "opacity-100" : "opacity-0"
             }`}
           >
-            {index === 0 && <span className="text-[#4D9BFF]">&lt;</span>}
+            {index === 0 && <span className="text-[#0A63FF]">&lt;</span>}
 
             {index === 1 ? (
               <span className="wz-glitch" data-text={text}>
@@ -192,7 +210,7 @@ function SectorCycler() {
 
             {index === 0 &&
               (done ? (
-                <span className="text-[#4D9BFF]">&nbsp;/&gt;</span>
+                <span className="text-[#0A63FF]">&nbsp;/&gt;</span>
               ) : (
                 <span className="wz-caret" />
               ))}
@@ -204,7 +222,7 @@ function SectorCycler() {
               <span
                 key={s}
                 className={`h-[3px] rounded-full transition-all duration-500 ${
-                  i === index ? "w-8 bg-[#0A63FF]" : "w-3 bg-white/25"
+                  i === index ? "w-8 bg-[#0A63FF]" : "w-3 bg-[#0F172A]/20"
                 }`}
               />
             ))}
@@ -220,69 +238,71 @@ export default function HeroSection() {
     <section
       id="home"
       style={display.style}
-      className="relative min-h-[100svh] w-full overflow-hidden bg-[#00070D] text-white"
+      className="relative min-h-[100svh] w-full overflow-hidden bg-[#F4F8FC] text-[#050B14]"
       aria-label="Wisscano Technologies"
     >
       <style>{EFFECTS_CSS}</style>
 
       {/* ------------------------------------------------------------- */}
       {/* 1. RESPONSIVE BACKGROUNDS                                     */}
-      {/* Hidden elements don't download their image, so each device    */}
-      {/* only fetches the one it needs.                                */}
       {/* ------------------------------------------------------------- */}
       <div
         aria-hidden="true"
         className="absolute inset-0 z-0 bg-cover bg-[position:70%_center] bg-no-repeat md:hidden"
-        style={{ backgroundImage: "url('/images/bkgroundone.jpg')" }}
+        style={{ backgroundImage: "url('/images/bgtwochoice.jpg')" }}
       />
       <div
         aria-hidden="true"
         className="absolute inset-0 z-0 hidden bg-cover bg-center md:block"
-        style={{ backgroundImage: "url('/images/bktwo.jpg')" }}
+        style={{ backgroundImage: "url('/images/bgtwochoice.jpg')" }}
       />
 
-      {/* Legibility overlay: vertical on mobile, horizontal on desktop */}
+      {/* Soft continuous veil to protect text legibility without harsh edges */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 z-0 bg-gradient-to-b from-[#00070D]/85 via-[#00070D]/55 to-[#00070D]/90 md:bg-gradient-to-r md:from-[#00070D]/90 md:via-[#00070D]/60 md:to-[#00070D]/20"
+        className="absolute inset-0 z-0 bg-gradient-to-b from-[#F4F8FC]/90 via-[#F4F8FC]/60 to-[#F4F8FC]/20 md:bg-gradient-to-r md:from-[#F4F8FC]/95 md:via-[#F4F8FC]/50 md:to-transparent"
       />
-      {/* Soft pool of the same navy behind the text so it sits in the image */}
+
+      {/* Slow fade into the About section: tall, many steps, no visible edge */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 z-0 bg-[radial-gradient(70%_65%_at_18%_50%,rgba(0,7,13,0.7),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-72 md:h-96"
+        style={FADE_STYLE}
       />
-      {/* Fade into the next section */}
+
+      {/* Thin strip of the About color at the very bottom, so no light line can show */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 bottom-0 z-0 h-28 bg-gradient-to-b from-transparent to-[#090D16]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[2px]"
+        style={{ backgroundColor: ABOUT_BG }}
       />
 
       {/* ------------------------------------------------------------- */}
       {/* 2. CONTENT: NAME, MOTTO, SECTORS, ACTION                      */}
       {/* ------------------------------------------------------------- */}
-      <div className="relative z-10 flex min-h-[100svh] flex-col justify-center px-6 pb-12 pt-28 sm:px-10 md:max-w-[56rem] md:px-14 md:pb-0 md:pt-24">
+      <div className="relative z-10 flex min-h-[100svh] flex-col justify-center px-6 pb-16 pt-28 sm:px-10 md:max-w-[56rem] md:px-14 md:pb-12 md:pt-24">
         {/* Company name */}
-        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white [text-shadow:0_2px_18px_rgba(0,7,13,0.8)] sm:text-base md:text-lg">
+        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-[#334155] sm:text-base md:text-lg">
           Wisscano Technologies
         </p>
 
         {/* Motto */}
-        <h1 className="mt-4 text-balance text-[clamp(2.6rem,12.5vw,4.5rem)] font-bold leading-[0.98] tracking-[-0.02em] [text-shadow:0_2px_30px_rgba(0,7,13,0.7)] md:mt-5 md:text-[clamp(3.5rem,6.5vw,5.25rem)]">
+        <h1 className="mt-4 text-balance text-[clamp(2.6rem,12.5vw,4.5rem)] font-bold leading-[0.98] tracking-[-0.02em] md:mt-5 md:text-[clamp(3.5rem,6.5vw,5.25rem)]">
           <span className="sr-only">Wisscano Technologies: </span>
-          <span className="block text-white">One Hub.</span>
-          <span className="block text-[#4D9BFF]">Infinite Tech Solutions.</span>
+          <span className="block text-[#050B14]">One Hub.</span>
+          <span className="block text-[#0A63FF]">Infinite Tech Solutions.</span>
         </h1>
 
         {/* The three sectors */}
         <SectorCycler />
 
-        {/* Action: sits in the page on every screen size */}
+        {/* Action */}
         <div className="mt-8 md:mt-10">
           <a
-            href={MVP_REQUEST_URL}
+            href="/#contact"
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex w-full items-center justify-center gap-2 rounded-full bg-[#0A63FF] px-7 py-4 sm:inline-flex sm:w-auto text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#4D9BFF] ${focusRing}`}
+            className={`flex w-full items-center justify-center gap-2 rounded-full bg-[#0A63FF] px-7 py-4 sm:inline-flex sm:w-auto text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-sm transition-colors hover:bg-[#004ECB] ${focusRing}`}
           >
             Start a request
             <ArrowRight size={14} />

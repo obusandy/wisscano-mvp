@@ -15,13 +15,14 @@ const LOGO_SRC = "/images/logo.png";
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
+  { label: "Products", href: "/products" },
   { label: "Services", href: "#services" },
   { label: "Process", href: "#process" },
   { label: "Contact", href: "#contact" },
 ];
 
 const focusRing =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4D9BFF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#00070D]";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A63FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F4F8FC]";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -29,7 +30,7 @@ export default function Header() {
   const [active, setActive] = useState("home");
   const [logoFailed, setLogoFailed] = useState(false);
 
-  // Darken the pill once the page moves
+  // Darken or shadow the pill once the page moves
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -75,7 +76,7 @@ export default function Header() {
         <a
           href="#home"
           aria-label="Wisscano Technologies, back to top"
-          className={`relative block h-12 w-12 justify-self-start overflow-hidden rounded-full bg-white ring-1 ring-white/20 sm:h-14 sm:w-14 ${focusRing}`}
+          className={`relative block h-12 w-12 justify-self-start overflow-hidden rounded-full bg-white ring-1 ring-[#050B14]/10 shadow-sm sm:h-14 sm:w-14 ${focusRing}`}
         >
           {logoFailed ? (
             <span className="flex h-full w-full items-center justify-center text-xl font-bold text-[#0A63FF]">
@@ -100,8 +101,8 @@ export default function Header() {
             aria-label="Primary"
             className={`flex items-center gap-1 rounded-full border p-1.5 backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-300 motion-reduce:transition-none ${
               scrolled
-                ? "border-white/15 bg-[#00070D]/80 shadow-[0_12px_40px_-8px_rgba(10,99,255,0.35)]"
-                : "border-white/10 bg-[#00070D]/40"
+                ? "border-[#050B14]/15 bg-[#F4F8FC]/90 shadow-[0_12px_40px_-8px_rgba(10,99,255,0.15)]"
+                : "border-[#050B14]/10 bg-[#F4F8FC]/70 shadow-sm"
             }`}
           >
             {/* Desktop links */}
@@ -115,8 +116,8 @@ export default function Header() {
                       aria-current={isActive ? "true" : undefined}
                       className={`block rounded-full px-4 py-2 text-sm font-medium transition-colors ${focusRing} ${
                         isActive
-                          ? "bg-[#0A63FF]/20 text-white"
-                          : "text-white/70 hover:bg-white/5 hover:text-white"
+                          ? "bg-[#0A63FF]/15 text-[#050B14] font-semibold"
+                          : "text-[#334155] hover:bg-[#050B14]/5 hover:text-[#050B14]"
                       }`}
                     >
                       {link.label}
@@ -128,10 +129,10 @@ export default function Header() {
 
             {/* Desktop CTA */}
             <a
-              href={MVP_REQUEST_URL}
+              href="/#contact"
               target="_blank"
               rel="noopener noreferrer"
-              className={`ml-1 hidden items-center gap-2 rounded-full bg-[#0A63FF] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#4D9BFF] md:inline-flex ${focusRing}`}
+              className={`ml-1 hidden items-center gap-2 rounded-full bg-[#0A63FF] px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-sm transition-colors hover:bg-[#004ECB] md:inline-flex ${focusRing}`}
             >
               Start a request
               <ArrowRight size={14} />
@@ -143,7 +144,7 @@ export default function Header() {
               onClick={() => setMenuOpen((open) => !open)}
               aria-expanded={menuOpen}
               aria-controls="mobile-menu"
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/5 md:hidden ${focusRing}`}
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-[#050B14] transition-colors hover:bg-[#050B14]/5 md:hidden ${focusRing}`}
             >
               {menuOpen ? "Close" : "Menu"}
               {menuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -154,7 +155,7 @@ export default function Header() {
           {menuOpen && (
             <div
               id="mobile-menu"
-              className="absolute right-0 top-full mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-3xl border border-white/15 bg-[#00070D]/95 p-2 shadow-[0_12px_40px_-8px_rgba(10,99,255,0.35)] backdrop-blur-md md:hidden"
+              className="absolute right-0 top-full mt-2 w-[min(18rem,calc(100vw-2rem))] rounded-3xl border border-[#050B14]/15 bg-[#F4F8FC]/95 p-2 shadow-[0_12px_40px_-8px_rgba(10,99,255,0.2)] backdrop-blur-md md:hidden"
             >
               <ul className="flex flex-col">
                 {NAV_LINKS.map((link) => {
@@ -167,8 +168,8 @@ export default function Header() {
                         aria-current={isActive ? "true" : undefined}
                         className={`block rounded-2xl px-4 py-3.5 text-base font-medium transition-colors ${focusRing} ${
                           isActive
-                            ? "bg-[#0A63FF]/20 text-white"
-                            : "text-white/80 hover:bg-white/5 hover:text-white"
+                            ? "bg-[#0A63FF]/15 text-[#050B14] font-semibold"
+                            : "text-[#334155] hover:bg-[#050B14]/5 hover:text-[#050B14]"
                         }`}
                       >
                         {link.label}

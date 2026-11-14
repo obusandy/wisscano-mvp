@@ -1,41 +1,81 @@
 "use client";
 
+import { useState } from "react";
 import { ArrowDown } from "lucide-react";
-import { display, mono } from "@/lib/fonts";
+import { display } from "@/lib/fonts";
 
 const FOCUS = ["Hospitality", "Commercial", "Industrial"] as const;
 
 /* ------------------------------------------------------------------ */
-/* The loop: three sectors on a ring, with an arrow running from each  */
-/* to the next. Numbering matches the catalogue markers.               */
+/* Partner logos. Put the files in public/images/partners/             */
 /* ------------------------------------------------------------------ */
-const CX = 240; // centre of the ring
-const CY = 256.7;
-const RING = 155.9; // radius of the ring the three circles sit on
-const NODE_R = 64; // radius of each circle
-
-const SECTORS = [
-  { num: "01", name: ["Power and", "energy"], deg: -90 }, // top
-  { num: "02", name: ["ICT and", "digital"], deg: 30 }, // bottom right
-  { num: "03", name: ["Facility", "technology"], deg: 150 }, // bottom left
+const PARTNERS = [
+  { name: "Microsoft", file: "microsoft.png" },
+  { name: "Adobe", file: "adobe.png" },
+  { name: "Google Cloud", file: "googlecloud.png" },
+  { name: "Acronis", file: "acronis.png" },
+  { name: "Bitdefender", file: "bitfender.png" },
+  { name: "Kaspersky", file: "kaspersky.png" },
+  { name: "Malwarebytes", file: "malwarebyte.png" },
 ] as const;
 
-const rad = (d: number) => (d * Math.PI) / 180;
-const point = (deg: number) =>
-  [CX + RING * Math.cos(rad(deg)), CY + RING * Math.sin(rad(deg))] as const;
-const f = (n: number) => n.toFixed(1);
+// Which partners go in each row (by position in the list above)
+const ROWS: number[][] = [
+  [0, 1],
+  [2, 3, 4],
+  [5, 6],
+];
 
-const NODES = SECTORS.map((s) => {
-  const [x, y] = point(s.deg);
-  return { ...s, x, y };
-});
+const CSS = `
+@keyframes wz-float {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-10px); }
+}
+.wz-float { animation: wz-float 5s ease-in-out infinite alternate; }
+@media (prefers-reduced-motion: reduce) {
+  .wz-float { animation: none; }
+}
+`;
 
-// Each arrow leaves one circle and stops just short of the next
-const ARROWS = SECTORS.map((s) => {
-  const [x0, y0] = point(s.deg + 27);
-  const [x1, y1] = point(s.deg + 120 - 31);
-  return `M${f(x0)} ${f(y0)} A${RING} ${RING} 0 0 1 ${f(x1)} ${f(y1)}`;
-});
+/* ------------------------------------------------------------------ */
+/* One floating logo tile                                              */
+/* ------------------------------------------------------------------ */
+function PartnerTile({
+  partner,
+  index,
+}: {
+  partner: (typeof PARTNERS)[number];
+  index: number;
+}) {
+  const [broken, setBroken] = useState(false);
+
+  return (
+    <li
+      className="wz-float"
+      style={{
+        animationDuration: `${4.6 + (index % 3) * 0.7}s`,
+        animationDelay: `${index * -0.8}s`,
+      }}
+    >
+      <div className="relative flex h-20 w-28 items-center justify-center rounded-2xl border border-white/30 bg-white/95 shadow-[0_14px_40px_-12px_rgba(0,0,0,0.65)] transition-transform duration-300 hover:scale-105 sm:h-24 sm:w-36">
+        {broken ? (
+          <span className="px-2 text-center text-sm font-semibold text-slate-700">
+            {partner.name}
+          </span>
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={`/images/${partner.file}`}
+            alt={partner.name}
+            loading="lazy"
+            onError={() => setBroken(true)}
+            className="h-full w-full object-contain p-4 sm:p-5"
+          />
+        )}
+      </div>
+    </li>
+  );
+}
 
 export default function AboutSection() {
   return (
@@ -45,6 +85,8 @@ export default function AboutSection() {
       style={display.style}
       className="relative flex min-h-[100svh] px-0 py-0 sm:px-3 sm:py-3"
     >
+      <style>{CSS}</style>
+
       <div className="relative flex w-full flex-1 overflow-hidden  bg-[#00070D]/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-sm sm:rounded-[2.25rem]">
         {/* A soft blue glow from the top edge, echoing the hero so the two read as one */}
         <div
@@ -82,7 +124,10 @@ export default function AboutSection() {
             </div>
 
             <p className="mt-5 max-w-xl border-l-2 border-[#0A63FF] pl-4 text-[0.95rem] font-medium text-white md:text-base lg:text-[1.05rem]">
-Streamline your operations with one accountable contact coordinating your ICT, power, and facility technology partners,replacing multiple vendor relationships with just one.            </p>
+              Streamline your operations with one accountable contact coordinating
+              your ICT, power, and facility technology partners, replacing multiple
+              vendor relationships with just one.
+            </p>
 
             <p className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/70">
               <span className="text-xs font-semibold uppercase tracking-[0.14em] text-white/55">
@@ -107,94 +152,26 @@ Streamline your operations with one accountable contact coordinating your ICT, p
             </a>
           </div>
 
-          {/* ------------------------------ The loop ------------------------------ */}
-          <svg
-            viewBox="0 0 480 440"
-            role="img"
-            aria-label="Power and energy, ICT and digital, and facility technology, joined in a loop by arrows"
-            className="mx-auto h-auto w-full max-w-md select-none overflow-visible md:max-w-lg"
-          >
-            <defs>
-              <marker
-                id="about-arrow"
-                viewBox="0 0 12 12"
-                refX="9"
-                refY="6"
-                markerUnits="userSpaceOnUse"
-                markerWidth="14"
-                markerHeight="14"
-                orient="auto"
-              >
-                <path
-                  d="M2 2 L9.5 6 L2 10"
-                  fill="none"
-                  stroke="#4D9BFF"
-                  strokeWidth={1.8}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </marker>
-            </defs>
+          {/* --------------------------- Partner logos --------------------------- */}
+          <div className="mx-auto w-full max-w-md md:max-w-lg">
+            <p className="mb-5 text-center text-xs font-semibold uppercase tracking-[0.14em] text-white/55">
+              Partner brands
+            </p>
 
-            {/* The arrows that make the loop */}
-            {ARROWS.map((d) => (
-              <path
-                key={d}
-                d={d}
-                fill="none"
-                stroke="#4D9BFF"
-                strokeWidth={1.75}
-                strokeLinecap="round"
-                markerEnd="url(#about-arrow)"
-              />
-            ))}
-
-            {/* The three sectors */}
-            {NODES.map((n) => (
-              <g key={n.num} className="group">
-                <circle
-                  cx={n.x}
-                  cy={n.y}
-                  r={NODE_R}
-                  className="transition-[fill] duration-300 [fill:rgba(10,99,255,0.16)] [stroke:rgba(255,255,255,0.42)] [stroke-width:1.25] group-hover:[fill:rgba(10,99,255,0.34)]"
-                />
-                <circle
-                  cx={n.x}
-                  cy={n.y}
-                  r={NODE_R - 7}
-                  fill="none"
-                  stroke="rgba(255,255,255,0.12)"
-                  strokeWidth={1}
-                />
-                <text
-                  x={n.x}
-                  y={n.y - 17}
-                  textAnchor="middle"
-                  fill="#4D9BFF"
-                  fontSize={11}
-                  fontWeight={500}
-                  style={mono.style}
-                  aria-hidden="true"
+            <div className="flex flex-col items-center gap-4 sm:gap-5" role="list" aria-label="Partner brands">
+              {ROWS.map((row, r) => (
+                <ul
+                  key={r}
+                  role="presentation"
+                  className="flex items-center justify-center gap-3 sm:gap-4"
                 >
-                  {n.num}
-                </text>
-                {n.name.map((line, i) => (
-                  <text
-                    key={line}
-                    x={n.x}
-                    y={n.y + 3 + i * 16}
-                    textAnchor="middle"
-                    fill="#FFFFFF"
-                    fontSize={13.5}
-                    fontWeight={600}
-                    aria-hidden="true"
-                  >
-                    {line}
-                  </text>
-                ))}
-              </g>
-            ))}
-          </svg>
+                  {row.map((i) => (
+                    <PartnerTile key={PARTNERS[i].name} partner={PARTNERS[i]} index={i} />
+                  ))}
+                </ul>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

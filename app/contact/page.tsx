@@ -41,12 +41,7 @@ export default function HomePage() {
               <p>&copy; {new Date().getFullYear()} Wisscano. All rights reserved.</p>
               <div className="flex items-center gap-4">
                 <p>MVP preview &middot; Technology needs.</p>
-                <a
-                  href="/admin"
-                  className="rounded-md border border-white/15 bg-white/5 px-3 py-1 text-white/90 transition hover:border-blue-500/50 hover:text-blue-400"
-                >
-                  Admin
-                </a>
+               
               </div>
             </div>
           </div>
