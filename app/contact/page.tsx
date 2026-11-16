@@ -26,27 +26,6 @@ export default function HomePage() {
           <RequestForm />
         </section>
       </main>
-
-      {/* ---------- Clean Glass Footer ---------- */}
-      <footer className="border-t border-white/10 bg-black/50 backdrop-blur-lg text-white/70">
-        <div className="mx-auto max-w-7xl px-6 py-6 sm:px-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="text-base font-bold tracking-tight text-white">
-                wisscano<span className="text-blue-500">.</span>
-              </span>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-white/70 sm:justify-end">
-              <p>&copy; {new Date().getFullYear()} Wisscano. All rights reserved.</p>
-              <div className="flex items-center gap-4">
-                <p>MVP preview &middot; Technology needs.</p>
-               
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

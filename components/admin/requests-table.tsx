@@ -13,11 +13,7 @@ const STATUS_STYLES: Record<string, string> = {
   CANCELLED: "bg-slate-100 text-slate-600 border-slate-200",
 };
 
-function buildPageLink(
-  page: number,
-  status?: string,
-  search?: string
-): string {
+function buildPageLink(page: number, status?: string, search?: string): string {
   const params = new URLSearchParams();
   params.set("page", String(page));
   if (status) params.set("status", status);
@@ -38,13 +34,14 @@ export function RequestsTable({
 }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 p-5">
-        <form method="GET" className="flex flex-wrap items-end gap-3">
-          <div className="min-w-[220px] flex-1">
-            <label
-              htmlFor="search"
-              className="mb-1 block text-xs font-medium text-slate-600"
-            >
+      {/* ---------- Filters ---------- */}
+      <div className="border-b border-slate-200 p-4 sm:p-5">
+        <form
+          method="GET"
+          className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end"
+        >
+          <div className="w-full sm:min-w-[220px] sm:flex-1">
+            <label htmlFor="search" className="mb-1 block text-xs font-medium text-slate-600">
               Search
             </label>
             <Input
@@ -52,22 +49,19 @@ export function RequestsTable({
               name="search"
               defaultValue={currentSearch}
               placeholder="Search name, email, or description..."
-              className="h-10"
+              className="h-10 text-base sm:text-sm"
             />
           </div>
 
-          <div className="w-52">
-            <label
-              htmlFor="status"
-              className="mb-1 block text-xs font-medium text-slate-600"
-            >
+          <div className="w-full sm:w-52">
+            <label htmlFor="status" className="mb-1 block text-xs font-medium text-slate-600">
               Status
             </label>
             <select
               id="status"
               name="status"
               defaultValue={currentStatus ?? ""}
-              className="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm"
+              className="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-base sm:text-sm"
             >
               <option value="">All statuses</option>
               {REQUEST_STATUSES.map((status) => (
@@ -78,22 +72,64 @@ export function RequestsTable({
             </select>
           </div>
 
-          <Button type="submit" className="h-10">
-            Apply
-          </Button>
+          <div className="flex items-center gap-4">
+            <Button type="submit" className="h-10 flex-1 sm:flex-none">
+              Apply
+            </Button>
 
-          {(currentStatus || currentSearch) && (
-            <Link
-              href="/admin/dashboard"
-              className="text-sm text-slate-500 underline"
-            >
-              Clear filters
-            </Link>
-          )}
+            {(currentStatus || currentSearch) && (
+              <Link href="/admin/dashboard" className="text-sm text-slate-500 underline">
+                Clear filters
+              </Link>
+            )}
+          </div>
         </form>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* ---------- Phones: cards ---------- */}
+      <ul className="divide-y divide-slate-100 md:hidden">
+        {items.length === 0 && (
+          <li className="px-5 py-10 text-center text-sm text-slate-500">
+            No requests found.
+          </li>
+        )}
+
+        {items.map((item) => (
+          <li key={item._id}>
+            <Link
+              href={`/admin/requests/${item._id}`}
+              className="block p-4 transition hover:bg-slate-50"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-slate-900">{item.fullName}</p>
+                  <p className="truncate text-xs text-slate-500">{item.email}</p>
+                </div>
+                <Badge
+                  variant="outline"
+                  className={`shrink-0 ${STATUS_STYLES[item.status] ?? ""}`}
+                >
+                  {item.status.replace("_", " ")}
+                </Badge>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between gap-3 text-sm">
+                <span className="min-w-0 truncate text-slate-700">
+                  {item.categoryNameSnapshot}
+                </span>
+                <span className="shrink-0 text-xs text-slate-500">
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+
+              <p className="mt-3 text-sm font-medium text-emerald-700">View request →</p>
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      {/* ---------- Tablets and desktops: table ---------- */}
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
             <tr>
@@ -119,14 +155,9 @@ export function RequestsTable({
                   <p className="font-medium text-slate-900">{item.fullName}</p>
                   <p className="text-xs text-slate-500">{item.email}</p>
                 </td>
-                <td className="px-5 py-4 text-slate-700">
-                  {item.categoryNameSnapshot}
-                </td>
+                <td className="px-5 py-4 text-slate-700">{item.categoryNameSnapshot}</td>
                 <td className="px-5 py-4">
-                  <Badge
-                    variant="outline"
-                    className={STATUS_STYLES[item.status]}
-                  >
+                  <Badge variant="outline" className={STATUS_STYLES[item.status]}>
                     {item.status.replace("_", " ")}
                   </Badge>
                 </td>
@@ -147,33 +178,21 @@ export function RequestsTable({
         </table>
       </div>
 
-      <div className="flex items-center justify-between border-t border-slate-200 px-5 py-4 text-sm text-slate-600">
+      {/* ---------- Paging ---------- */}
+      <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-4 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <p>
-          Page {pagination.page} of {pagination.totalPages} ·{" "}
-          {pagination.total} total
+          Page {pagination.page} of {pagination.totalPages} · {pagination.total} total
         </p>
         <div className="flex gap-2">
           {pagination.page > 1 && (
-            <Link
-              href={buildPageLink(
-                pagination.page - 1,
-                currentStatus,
-                currentSearch
-              )}
-            >
+            <Link href={buildPageLink(pagination.page - 1, currentStatus, currentSearch)}>
               <Button variant="outline" size="sm">
                 Previous
               </Button>
             </Link>
           )}
           {pagination.page < pagination.totalPages && (
-            <Link
-              href={buildPageLink(
-                pagination.page + 1,
-                currentStatus,
-                currentSearch
-              )}
-            >
+            <Link href={buildPageLink(pagination.page + 1, currentStatus, currentSearch)}>
               <Button variant="outline" size="sm">
                 Next
               </Button>

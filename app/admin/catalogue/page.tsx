@@ -1,8 +1,8 @@
 import { requireAdminSession } from "@/lib/session";
 import { connectDB } from "@/lib/db";
 import CatalogItem from "@/models/CatalogItem";
-import { AdminHeader } from "@/components/admin/admin-header";
 import CatalogueManager from "../catalogue-manager";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 export default async function AdminCataloguePage() {
   const session = await requireAdminSession();

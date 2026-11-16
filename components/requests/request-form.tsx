@@ -576,10 +576,6 @@ export function RequestForm() {
               placeholder="Tell us what you need. Include useful details such as equipment, quantities, location, or the problem you're experiencing."
               className={`min-h-32 resize-y ${fieldBase}`}
             />
-            <p className="text-xs leading-5 text-white/60">
-              10–2,000 characters. Please do not include passwords, PINs,
-              payment details, or other confidential information.
-            </p>
           </Field>
         </fieldset>
 
@@ -613,9 +609,6 @@ export function RequestForm() {
           )}
         </Button>
 
-        <p className="text-center text-xs leading-5 text-white/60">
-          Your contact details help the team follow up on this request.
-        </p>
       </form>
     </div>
   );

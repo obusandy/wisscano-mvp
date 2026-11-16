@@ -7,6 +7,7 @@ import AboutSection from "./about/page";
 import Header from "@/components/header/page";
 import CatalogueSection from "@/components/CatalogueSection";
 import ProcessSection from "./process/page";
+import Footer from "@/components/site/footer";
 
 export const metadata: Metadata = {
   title: "Contact Coordination Desk | Wisscano Technologies",
@@ -68,6 +69,7 @@ export default function ContactPage() {
         <CatalogueSection />
         <ProcessSection />
         <HomePage />
+        <Footer />
       </div>
     </main>
   );

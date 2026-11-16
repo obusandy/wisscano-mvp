@@ -36,9 +36,7 @@ export default function ServiceCard({ item, number }: Props) {
           </div>
         )}
 
-        <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-wider text-gray-700 shadow-sm backdrop-blur">
-          Service {String(number).padStart(2, "0")}
-        </span>
+       
       </div>
 
       {/* Card Content */}

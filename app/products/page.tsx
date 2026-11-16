@@ -50,9 +50,6 @@ export default async function ProductsPage({
     .lean();
   const items: Item[] = JSON.parse(JSON.stringify(raw));
 
-  const countFor = (slug: string) =>
-    items.filter((i) => i.sectorTags?.includes(slug)).length;
-
   // With a sector selected, keep only that sector's items
   const visible = activeSector
     ? items.filter((i) => i.sectorTags?.includes(activeSector.slug))
@@ -89,9 +86,7 @@ export default async function ProductsPage({
           </p>
           <h1 className="mt-4 max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
             {activeSector ? (
-              <>
-                {activeSector.label}{" "}
-              </>
+              <>{activeSector.label} </>
             ) : (
               <>
                 Everything your building <span className="text-blue-400">needs.</span>
@@ -107,7 +102,6 @@ export default async function ProductsPage({
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/products" className={pill(!activeSector)}>
               All
-              <span className="text-xs opacity-70">{items.length}</span>
             </Link>
             {SECTORS.map((s) => (
               <Link
@@ -116,7 +110,6 @@ export default async function ProductsPage({
                 className={pill(activeSector?.slug === s.slug)}
               >
                 {s.label}
-                <span className="text-xs opacity-70">{countFor(s.slug)}</span>
               </Link>
             ))}
           </div>
@@ -126,16 +119,11 @@ export default async function ProductsPage({
       {/* ================= Products ================= */}
       {products.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-16 sm:px-8">
-          <div className="flex items-end justify-between gap-4">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              {activeSector
-                ? `${activeSector.label} products`
-                : "Authorized partner products"}
-            </h2>
-            <span className="text-sm text-gray-500">
-              {products.length} {products.length === 1 ? "item" : "items"}
-            </span>
-          </div>
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            {activeSector
+              ? `${activeSector.label} products`
+              : "Authorized partner products"}
+          </h2>
 
           {groupByCategory(products).map(([category, list]) => (
             <div key={category} className="mt-12">
