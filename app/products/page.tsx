@@ -94,9 +94,8 @@ export default async function ProductsPage({
             )}
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg">
-            {activeSector
-              ? `Authorized partner products and services for ${activeSector.label}.`
-              : "Authorized partner products and managed services, supplied and supported by Wisscano."}
+            
+              Authorized partner products and managed services, supplied and supported by Wisscano.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">

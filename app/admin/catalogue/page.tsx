@@ -19,12 +19,7 @@ export default async function AdminCataloguePage() {
       />
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-slate-950">Products & Services</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Add, edit or hide what shows on the catalogue and the products page.
-          </p>
-        </div>
+        
 
         <CatalogueManager initialItems={items} />
       </main>
